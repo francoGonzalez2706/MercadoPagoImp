@@ -23,7 +23,7 @@ public class MercadoPagoController {
 
     @PostMapping("/mp")
     public ResponseEntity<String> mp( @RequestBody List<Long> ids) throws Exception {
-        MercadoPagoConfig.setAccessToken("TEST-4388047553335921-061420-111ca777e3494d390782b805c2c6962c-231327132");
+        MercadoPagoConfig.setAccessToken("APP_USR-4468875627904241-052914-0555b9f970568423d37e2615f8c56278-2466775698");
         List<PreferenceItemRequest> items = new ArrayList<>();
 
         OrdenCompra ordenCompra = ordenCompraService.generarOrdenCompra(ids);
