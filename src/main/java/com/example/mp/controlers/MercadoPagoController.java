@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pay")
@@ -22,7 +23,9 @@ public class MercadoPagoController {
     private final OrdenCompraService ordenCompraService;
 
     @PostMapping("/mp")
-    public ResponseEntity<String> mp( @RequestBody List<Long> ids) throws Exception {
+    @CrossOrigin("*")
+    public ResponseEntity<String> mp( @RequestBody Map<String, List<Long>> body) throws Exception {
+        List<Long> ids = body.get("id");
         MercadoPagoConfig.setAccessToken("APP_USR-4468875627904241-052914-0555b9f970568423d37e2615f8c56278-2466775698");
         List<PreferenceItemRequest> items = new ArrayList<>();
 
