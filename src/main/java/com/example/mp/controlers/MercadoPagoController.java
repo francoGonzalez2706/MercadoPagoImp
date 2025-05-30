@@ -7,6 +7,7 @@ import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.resources.preference.Preference;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +23,14 @@ import java.util.Map;
 public class MercadoPagoController {
     private final OrdenCompraService ordenCompraService;
 
+    @Value("${mercadopago.access-token}")
+    private String mercadoPagoAccessToken;
+
     @PostMapping("/mp")
     @CrossOrigin("*")
     public ResponseEntity<String> mp( @RequestBody Map<String, List<Long>> body) throws Exception {
         List<Long> ids = body.get("id");
-        MercadoPagoConfig.setAccessToken("APP_USR-4468875627904241-052914-0555b9f970568423d37e2615f8c56278-2466775698");
+        MercadoPagoConfig.setAccessToken(mercadoPagoAccessToken);
         List<PreferenceItemRequest> items = new ArrayList<>();
 
         OrdenCompra ordenCompra = ordenCompraService.generarOrdenCompra(ids);
@@ -44,20 +48,28 @@ public class MercadoPagoController {
             items.add(item);
         }
         PreferenceBackUrlsRequest backUrls =
-
                 PreferenceBackUrlsRequest.builder()
-                        .success("https://www.seu-site/success")
-                        .pending("https://www.seu-site/pending")
-                        .failure("https://www.seu-site/failure")
+                        .success("https://localhost:5173/paymentSuccess")
+                        .pending("https://localhost:5173/")
+                        .failure("https://localhost:5173/paymentFailure")
                         .build();
 
         List<PreferencePaymentTypeRequest> excludedPaymentTypes = new ArrayList<>();
         excludedPaymentTypes.add(PreferencePaymentTypeRequest.builder().id("ticket").build());
 
+           /*
+              *Otros ejemplos de id que podrías excluir:
+              * "credit_card": tarjetas de crédito
+              * "debit_card": tarjetas de débito
+              * "ticket": pagos en efectivo como Rapipago o Pago Fácil
+              * "atm": pagos a través de cajero automático
+       */
+
         PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
                 .excludedPaymentTypes(excludedPaymentTypes)
                 .installments(1)
                 .build();
+        //el campo installments(1) se refiere a la cantidad máxima de cuotas permitidas para realizar el pago
 
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .items(items)
